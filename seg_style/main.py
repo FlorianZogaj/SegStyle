@@ -35,8 +35,22 @@ def main():
         output_right_size = styled_img.squeeze().cpu().numpy()
         output_right_size = output_right_size.transpose((1, 2, 0)).copy()
         output_right_size = (output_right_size * 255).astype(np.uint8)
-    Image.fromarray(output_right_size).save('test.png')
 
+    Image.fromarray(output_right_size).save('test.png')
+    # create_video()
+
+
+def create_video():
+    import os
+    import moviepy.video.io.ImageSequenceClip
+    image_folder = './video'
+    fps = 30
+
+    image_files = [os.path.join(image_folder, img)
+                   for img in sorted(os.listdir(image_folder))
+                   if img.endswith(".png")]
+    clip = moviepy.video.io.ImageSequenceClip.ImageSequenceClip(image_files, fps=fps)
+    clip.write_videofile('Style_Video.mp4')
 
 
 

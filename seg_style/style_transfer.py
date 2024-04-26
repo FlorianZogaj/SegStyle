@@ -167,8 +167,8 @@ def get_style_model_and_losses(cnn, normalization_mean, normalization_std,
 
 def get_input_optimizer(input_img):
     # this line to show that input is a parameter that requires a gradient
-    # optimizer = optim.LBFGS([input_img])
-    optimizer = optim.Adam([input_img], lr=0.005)
+    optimizer = optim.LBFGS([input_img])
+    # optimizer = optim.Adam([input_img], lr=0.005)
     return optimizer
 
 
