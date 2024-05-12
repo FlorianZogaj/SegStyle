@@ -4,6 +4,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+import os
+import moviepy.video.io.ImageSequenceClip
+
 from PIL import Image
 import matplotlib.pyplot as plt
 import cv2
@@ -169,6 +172,7 @@ def get_style_model_and_losses(cnn, normalization_mean, normalization_std,
 def get_input_optimizer(input_img):
     # this line to show that input is a parameter that requires a gradient
     optimizer = optim.LBFGS([input_img])
+    #optimizer = optim.Adam([input_img], lr=0.05)
     # optimizer = optim.Adam([input_img], lr=0.005)
     return optimizer
 
@@ -244,6 +248,19 @@ def run_style_transfer(cnn, normalization_mean, normalization_std,
     return input_img
 
 
+
+def create_video(num):
+    image_folder = './video'
+    fps = 30
+
+    image_files = [os.path.join(image_folder, img)
+                   for img in sorted(os.listdir(image_folder))
+                   if img.endswith(".png")]
+    clip = moviepy.video.io.ImageSequenceClip.ImageSequenceClip(image_files, fps=fps)
+    clip.write_videofile(f'Style_Video{num}.mp4')
+
+
+
 class StyleTransfer:
 
     def __init__(self):
@@ -265,6 +282,9 @@ class StyleTransfer:
         style_tensors_background = loader(style_background).unsqueeze(0).to(self.device)
 
         input_tensor = content_tensor.clone()
+
+        
+
         output_tensor_obj = run_style_transfer(
             self.cnn, 
             self.cnn_normalization_mean, self.cnn_normalization_std,
@@ -272,11 +292,15 @@ class StyleTransfer:
             num_steps=num_steps
         )
 
+        create_video(1)
+
         output_tensor_background = run_style_transfer(
             self.cnn, 
             self.cnn_normalization_mean, self.cnn_normalization_std,
             content_tensor, style_tensors_background, mask_background, output_tensor_obj,
             num_steps=num_steps
         )
+
+        create_video(2)
 
         return output_tensor_background
